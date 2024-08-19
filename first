@@ -35,6 +35,7 @@ pipeline {
         stage('Deploy to Production') {
             steps {
                 sh 'aws s3 cp target/my-app.war s3://my-production-bucket/'
+                //test
             }
         }
     }
