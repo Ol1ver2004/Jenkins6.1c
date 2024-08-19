@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+    stages {
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Unit and Integration Tests') {
+            steps {
+                sh 'mvn test'
+                sh 'mvn verify'
+            }
+        }
+        stage('Code Analysis') {
+            steps {
+                sh 'mvn sonar:sonar'
+            }
+        }
+        stage('Security Scan') {
+            steps {
+                sh 'mvn dependency-check:check'
+            }
+        }
+        stage('Deploy to Staging') {
+            steps {
+                sh 'aws s3 cp target/my-app.war s3://my-staging-bucket/'
+            }
+        }
+        stage('Integration Tests on Staging') {
+            steps {
+                sh 'mvn test -DseleniumTests'
+            }
+        }
+        stage('Deploy to Production') {
+            steps {
+                sh 'aws s3 cp target/my-app.war s3://my-production-bucket/'
+            }
+        }
+    }
+}
